@@ -30,11 +30,9 @@ function register_post()
 function do_login()
 {
     $messages = [];
-    switch ($_GET['from']) {
+    switch (isset($_GET['from'])) {
         case 'register':
-            $messages['success'] = 'Você ainda precisa confirmar o email';
-            break;
-        default:
+            $messages['success'] = "Você ainda precisa confirmar o email!";
             break;
     }
     render_view('login', $messages);

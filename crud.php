@@ -12,8 +12,8 @@ function checkEmail($email)
 {
     $dados = file_get_contents(DATA_LOCATION);
     $dados = json_decode($dados);
-    foreach ($dados[0] as $data) {
-        if ($email == $data) {
+    foreach ($dados as $data) {
+        if ($email === $data->email) {
             return $email;
         }
     }
