@@ -1,2 +1,4 @@
 /vendor/
 /data/users.json
+git-filter-repo.txt
+.env

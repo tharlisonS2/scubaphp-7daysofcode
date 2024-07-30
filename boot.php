@@ -1,6 +1,8 @@
 <?php
 require_once 'vendor/autoload.php';
 include 'config.php';
+include 'crypt.php';
+include 'mail.php';
 include "view.php";
 include "crud.php";
 include "validate.php";
