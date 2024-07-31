@@ -17,11 +17,16 @@ function register_post()
     $validation_errors = validate_registration($_POST['person']);
     if (count($validation_errors) == 0) {
         unset($_POST['person']['password-confirm']);
+
+        $email = filter_var($_POST['person']['email'], FILTER_VALIDATE_EMAIL);
+        $name = htmlspecialchars(trim($_POST['person']['name']));
+        $verifyCode = htmlspecialchars(trim($_POST['person']['verify_code']));
+        $url = "http://localhost:8000?page=mail_validation&token=$verifyCode";
         $_POST['person']['mail_validation'] = false;
-        $_POST['person']['verify_code'] = ssl_crypt($_POST['person']['email']);
+        $_POST['person']['verify_code'] = ssl_crypt($email);
         crud_create($_POST['person']);
 
-        sendMailConfirmation($_POST['person']['verify_code']);
+        sendMailConfirmation($email, $name, $url);
         header("Location: /?page=login&from=register");
     } else {
         $messages = [
@@ -36,7 +41,7 @@ function do_login()
     $messages = [];
     switch (isset($_GET['from'])) {
         case 'register':
-            $messages['success'] = "Você ainda precisa confirmar o email! <a href='/?page=mail_validation'>confirmar</a>";
+            $messages['success'] = "Você ainda precisa confirmar o email!";
             break;
     }
     render_view('login', $messages);
