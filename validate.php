@@ -8,7 +8,7 @@ function validate_registration($data)
     if ($data['password'] !== $data['password-confirm']) {
         $errors['password-confirm'] = 'Senha e confirmação devem ser iguais';
     }
-    if(checkEmail($data['email'])){
+    if(crud_restore($data['email'])){
         $errors['email'] = 'Email já usado, tente outro';
     }
     return $errors;

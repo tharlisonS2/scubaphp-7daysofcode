@@ -22,10 +22,11 @@ function register_post()
         $name = htmlspecialchars(trim($_POST['person']['name']));
         $verifyCode = htmlspecialchars(trim($_POST['person']['verify_code']));
         $url = "http://localhost:8000?page=mail_validation&token=$verifyCode";
+
         $_POST['person']['mail_validation'] = false;
         $_POST['person']['verify_code'] = ssl_crypt($email);
-        crud_create($_POST['person']);
 
+        crud_create($_POST['person']);
         sendMailConfirmation($email, $name, $url);
         header("Location: /?page=login&from=register");
     } else {
@@ -48,11 +49,19 @@ function do_login()
 }
 function do_validation()
 {
-    if (isset($_GET['token'])) {
+    $messages = [];
 
-        echo "Testando 1 2 3";
+    if (!isset($_GET['token'])) {
+        render_view('login');
     }
-    //header("Location: /?page=login");
+    $data = ssl_decrypt($_GET['token']);
+    if (crud_restore($data)) {
+        crud_update($data);
+        $messages['success'] = 'Email confirmado login autorizado!';
+    } else {
+        $messages['validations_erros'] = 'Token invalido!';
+    }
+    render_view('login', $messages);
 }
 
 function do_not_found()

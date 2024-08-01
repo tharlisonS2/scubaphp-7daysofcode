@@ -11,5 +11,13 @@ function ssl_crypt($data)
 }
 function ssl_decrypt($token)
 {
-    return openssl_decrypt($token, 'aes-128-cbc-hmac-sha256', 'scubaphp');
+    $method = 'aes-128-cbc';
+    $token = base64_decode($token);
+
+    $ivLength = openssl_cipher_iv_length($method);
+    $iv = substr($token, 0, $ivLength);
+    $encryptedData = substr($token, $ivLength);
+    echo $iv . "  ||  " . $token . "  ||  " . $encryptedData . PHP_EOL;
+    $data = openssl_decrypt($encryptedData, $method, 'scubaphp', 0, $iv);
+    return $data;
 }
