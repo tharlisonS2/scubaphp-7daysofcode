@@ -10,8 +10,9 @@
 </head>
 <body>
     <h1>Scuba<span>PHP</span></h1>
-    <form action="/?page=login&from=login" method="POST">
+    <form action="/?page=login" method="POST">
         {{success}}
+        {{error_random}}
         <label for="login">Email</label>
         <input type="text" name="person[email]" required>
         {{error_email}}

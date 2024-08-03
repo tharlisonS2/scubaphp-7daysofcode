@@ -20,24 +20,43 @@ function register_post()
 
         $email = filter_var($_POST['person']['email'], FILTER_VALIDATE_EMAIL);
         $name = htmlspecialchars(trim($_POST['person']['name']));
-        $verifyCode = htmlspecialchars(trim($_POST['person']['verify_code']));
-        $url = "http://localhost:8000?page=mail_validation&token=$verifyCode";
 
+        $_POST['person']['password'] = password_hash($_POST['person']['password'], PASSWORD_ARGON2ID);
         $_POST['person']['mail_validation'] = false;
         $_POST['person']['verify_code'] = ssl_crypt($email);
+        $verifyCode = htmlspecialchars(trim($_POST['person']["verify_code"]));
+
+        $url = "http://localhost:8000?page=mail_validation&token=$verifyCode";
 
         crud_create($_POST['person']);
         sendMailConfirmation($email, $name, $url);
         header("Location: /?page=login&from=register");
     } else {
         $messages = [
-            'validations_erros' => $validation_errors
+            'errors' => $validation_errors
         ];
         render_view('register', $messages);
     }
     exit();
 }
 function do_login()
+{
+    switch($_SERVER['REQUEST_METHOD']) {
+        case 'GET':
+            login_get();
+            break;
+        case 'POST':
+            $email = $_POST['person']['email'];
+            $password = $_POST['person']['password'];
+            authentication($email, $password);
+            break;
+        default:
+            do_not_found();
+            var_dump($_SERVER['REQUEST_METHOD']);
+            break;
+    }
+}
+function login_get()
 {
     $messages = [];
     switch (isset($_GET['from'])) {
@@ -47,6 +66,10 @@ function do_login()
     }
     render_view('login', $messages);
 }
+function login_post()
+{
+
+}
 function do_validation()
 {
     $messages = [];
@@ -55,11 +78,13 @@ function do_validation()
         render_view('login');
     }
     $data = ssl_decrypt($_GET['token']);
-    if (crud_restore($data)) {
+    if (crud_restore($data) !== false) {
         crud_update($data);
         $messages['success'] = 'Email confirmado login autorizado!';
+
     } else {
-        $messages['validations_erros'] = 'Token invalido!';
+        //  $errors['random'] = 'Token invalido!';
+        // $messages['errors'] =$errors;
     }
     render_view('login', $messages);
 }
@@ -70,3 +95,8 @@ function do_not_found()
     render_view('not_found');
 }
 
+function do_home()
+{
+   
+    render_view('home');
+}

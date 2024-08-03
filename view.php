@@ -7,7 +7,7 @@ function render_view($template, $messages = [])
 }
 function load_content($template, $messages)
 {
-    $validation_errors = $messages['validations_erros'] ?? [];
+    $validation_errors = $messages['errors'] ?? [];
     $success_msg = $messages['success'] ?? '';
     $content = file_get_contents(VIEW_FOLDER . "$template.view");
     $content = put_error_data($content, $validation_errors);

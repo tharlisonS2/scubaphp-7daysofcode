@@ -1,5 +1,4 @@
 <?php
-include "config.php";
 function crud_create($user)
 {
     $dados = file_get_contents(DATA_LOCATION);
@@ -30,4 +29,13 @@ function crud_update($email)
             file_put_contents(DATA_LOCATION, $dados);
         }
     }
+}
+function crud_find($email)
+{
+    $dados = json_decode(file_get_contents(DATA_LOCATION));
+    $findKey = array_search($email, array_column($dados, 'email'));
+    if ($findKey === false) {
+        return false;
+    }
+    return $dados[$findKey];
 }
