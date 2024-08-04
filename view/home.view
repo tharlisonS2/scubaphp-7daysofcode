@@ -19,14 +19,14 @@
         <div class="dados">
             <div class="info-dados">
                 {{error_someError}}
-                <p>Nome do Usuário:{{field_name}}</p>
-                <p>Email do Usuário:{{field_email}}</p>
+                <p>Nome do Usuário: {{name_user}}</p>
+                <p>Email do Usuário: {{email_user}}</p>
             </div>
             <div class="delete">
-                <a href="./?page=logout&from=home">
+                <a href="./logout">
                     <img src="./resource/exit-outline.svg">
                 </a>
-                <a href="./?page=delete-account&from=home">
+                <a href="./delete">
                     <img src="./resource/trash-outline.svg">
                 </a>
             </div>

@@ -17,7 +17,7 @@ function ssl_decrypt($token)
     $ivLength = openssl_cipher_iv_length($method);
     $iv = substr($token, 0, $ivLength);
     $encryptedData = substr($token, $ivLength);
-    
     $data = openssl_decrypt($encryptedData, $method, 'scubaphp', 0, $iv);
+  
     return $data;
 }

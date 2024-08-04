@@ -10,8 +10,12 @@ function load_content($template, $messages)
     $validation_errors = $messages['errors'] ?? [];
     $success_msg = $messages['success'] ?? '';
     $content = file_get_contents(VIEW_FOLDER . "$template.view");
+    if (auth_user()) {
+        $dados = json_decode($_SESSION['user']);
+        $content = put_user_data($content, $dados->name, $dados->email);
+    }
     $content = put_error_data($content, $validation_errors);
-    $content = put_success_msg($content,$success_msg);
+    $content = put_success_msg($content, $success_msg);
     $content = put_old_values($content);
     return $content;
 }
@@ -22,15 +26,26 @@ function put_old_values($content)
     $content = data_binding($content, $values);
     return $content;
 }
-function prepare_old_values($value_places){
+function prepare_old_values($value_places)
+{
     $values = [];
-    foreach ($value_places as $place){
-        $field = str_replace('{{value_','',$place);
-        $field = str_replace('}}','',$field);
-        $field = str_replace('_','-',$field);
-        $values[$place] = $_POST['person'][$field]??'';
+    foreach ($value_places as $place) {
+        $field = str_replace('{{value_', '', $place);
+        $field = str_replace('}}', '', $field);
+        $field = str_replace('_', '-', $field);
+        $values[$place] = $_POST['person'][$field] ?? '';
     }
     return $values;
+}
+function put_user_data($content, $name, $email)
+{
+    //$indice[0] = get_place_of("name", $content);
+    //$indice[1] = get_place_of("email", $content);
+
+    $places['{{name_user}}'] = $name;
+    $places['{{email_user}}'] = $email;
+    $content = data_binding($content, $places);
+    return $content;
 }
 function put_success_msg($content, $success_msg)
 {
@@ -89,7 +104,7 @@ function get_error_places($content)
 }
 function get_place_of($field, $content)
 {
-    $pattern = "/{{".$field."\w+}}/";
+    $pattern = "/{{" . $field . "\w+}}/";
     preg_match_all($pattern, $content, $match);
     return $match[0] ?? [];
 }

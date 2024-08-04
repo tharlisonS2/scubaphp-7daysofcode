@@ -39,3 +39,19 @@ function crud_find($email)
     }
     return $dados[$findKey];
 }
+function crud_delete($user)
+{
+    $dados = file_get_contents(DATA_LOCATION);
+    $dados = json_decode($dados);
+    $user = json_decode($user);
+
+    foreach ($dados as $indice => $dado) {
+        if ($dado->email === $user->email) {
+            unset($dados[$indice]);
+            $dados = json_encode($dados);
+            file_put_contents(DATA_LOCATION, $dados);
+            do_logout();
+        }
+
+    }
+}

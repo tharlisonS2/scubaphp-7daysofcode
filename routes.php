@@ -18,7 +18,6 @@ function guest_routes()
             break;
         default:
             do_not_found();
-
             break;
     }
 }
@@ -28,6 +27,12 @@ function auth_routes()
     switch ($path) {
         case '/home':
             do_home();
+            break;
+        case '/logout':
+            do_logout();
+            break;
+        case '/delete':
+            do_delete();
             break;
         default:
             do_not_found();

@@ -41,7 +41,7 @@ function register_post()
 }
 function do_login()
 {
-    switch($_SERVER['REQUEST_METHOD']) {
+    switch ($_SERVER['REQUEST_METHOD']) {
         case 'GET':
             login_get();
             break;
@@ -49,6 +49,9 @@ function do_login()
             $email = $_POST['person']['email'];
             $password = $_POST['person']['password'];
             authentication($email, $password);
+            if (auth_user()) {
+                header("Location: /");
+            }
             break;
         default:
             do_not_found();
@@ -78,17 +81,27 @@ function do_validation()
         render_view('login');
     }
     $data = ssl_decrypt($_GET['token']);
-    if (crud_restore($data) !== false) {
+    if (crud_restore($data)) {
         crud_update($data);
         $messages['success'] = 'Email confirmado login autorizado!';
 
     } else {
-        //  $errors['random'] = 'Token invalido!';
-        // $messages['errors'] =$errors;
+        $errors['random'] = 'Token invalido!';
+        $messages['errors'] = $errors;
     }
     render_view('login', $messages);
 }
-
+function do_logout()
+{
+    session_destroy();
+    header("Location: /?page=login");
+    render_view('login');
+}
+function do_delete()
+{
+    $user = $_SESSION['user'];
+    crud_delete($user);
+}
 function do_not_found()
 {
     http_response_code(404);
@@ -97,6 +110,6 @@ function do_not_found()
 
 function do_home()
 {
-   
+
     render_view('home');
 }
