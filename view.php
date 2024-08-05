@@ -9,11 +9,11 @@ function load_content($template, $messages)
 {
     $validation_errors = $messages['errors'] ?? [];
     $success_msg = $messages['success'] ?? '';
+    $fields = $messages['fields'] ?? '';
+   
     $content = file_get_contents(VIEW_FOLDER . "$template.view");
-    if (auth_user()) {
-        $dados = json_decode($_SESSION['user']);
-        $content = put_user_data($content, $dados->name, $dados->email);
-    }
+    
+    $content = put_field_values($content, $fields);
     $content = put_error_data($content, $validation_errors);
     $content = put_success_msg($content, $success_msg);
     $content = put_old_values($content);
@@ -36,6 +36,26 @@ function prepare_old_values($value_places)
         $values[$place] = $_POST['person'][$field] ?? '';
     }
     return $values;
+}
+function put_field_values($content, $fields)
+{
+    $field_places = get_field_places($content);
+    $field_values = prepare_field_values($fields, $field_places);
+    $content = data_binding($content, $field_values);
+    return $content;
+}
+
+function prepare_field_values($fields, $field_places)
+{
+    $field_values = [];
+    foreach ($field_places as $place) {
+        $field = str_replace('{{field_', '', $place);
+        $field = str_replace('}}', '', $field);
+        $field = str_replace('_', '-', $field);
+        $field_values[$place] = $fields->{$field} ?? '';
+    }
+
+    return $field_values;
 }
 function put_user_data($content, $name, $email)
 {
@@ -89,6 +109,10 @@ function error_msg_maker($msg)
 {
     $error = "<span class='mensagem-erro'>$msg</span>";
     return $error;
+}
+function get_field_places($content)
+{
+    return get_place_of('field', $content);
 }
 function get_value_places($content)
 {

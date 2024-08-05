@@ -39,6 +39,18 @@ function crud_find($email)
     }
     return $dados[$findKey];
 }
+function crud_save_password($user)
+{
+    $dados = file_get_contents(DATA_LOCATION);
+    $dados = json_decode($dados);
+    foreach ($dados as $data) {
+        if ($user->email === $data->email) {
+            $data->password = password_hash($user->password, PASSWORD_ARGON2ID);
+            $dados = json_encode($dados);
+            file_put_contents(DATA_LOCATION, $dados);
+        }
+    }
+}
 function crud_delete($user)
 {
     $dados = file_get_contents(DATA_LOCATION);

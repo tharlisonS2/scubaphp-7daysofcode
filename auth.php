@@ -20,11 +20,8 @@ function authentication($email, $password)
         render_view('login', $messages);
     }
 }
-function auth_delete()
-{
 
-}
 function auth_user()
 {
-    return isset($_SESSION['user']);
+    return  isset($_SESSION['user']) ?  json_decode($_SESSION['user']) : '';
 }

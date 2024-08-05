@@ -16,6 +16,12 @@ function guest_routes()
         case 'mail_validation':
             do_validation();
             break;
+        case 'forget-password':
+            do_forget_password();
+            break;
+        case 'change-password':
+            do_change_password();
+            break;
         default:
             do_not_found();
             break;

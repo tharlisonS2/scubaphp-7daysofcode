@@ -17,6 +17,20 @@ function sendMailConfirmation($email, $username, $url)
     ];
     sendEmail($recipients, $content);
 }
+function sendMailForgetPassword($email, $username, $url)
+{
+    $recipients = [
+        "email" => $email,
+        "username" => $username,
+    ];
+
+    $content = [
+        "subject" => "Redefinição de senha na ScubaPHP",
+        "body" => "<a href='$url' >confirmar email</a>",
+        "altBody" => "Copie e acesse o link para redefinir sua senha: $url"
+    ];
+    sendEmail($recipients, $content);
+}
 function sendEmail(array $recipients, array $content)
 {
     $mail = new PHPMailer(true);
@@ -44,7 +58,6 @@ function sendEmail(array $recipients, array $content)
         $mail->AltBody = $content["altBody"] ?? '';
 
         $mail->send();
-        echo 'Message has been sent';
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
 

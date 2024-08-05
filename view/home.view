@@ -11,7 +11,6 @@
 <body>
     {{success}}
     <h1>Scuba<span>PHP</span></h1>
-
     <div class="info">
         <div class="imagemPerfil">
             <img src="./resource/elephant.png">
@@ -19,8 +18,8 @@
         <div class="dados">
             <div class="info-dados">
                 {{error_someError}}
-                <p>Nome do Usuário: {{name_user}}</p>
-                <p>Email do Usuário: {{email_user}}</p>
+                <p>Nome do Usuário: {{field_name}}</p>
+                <p>Email do Usuário: {{field_email}}</p>
             </div>
             <div class="delete">
                 <a href="./logout">
@@ -32,6 +31,5 @@
             </div>
         </div>
     </div>
-
 </body>
 </html>

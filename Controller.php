@@ -55,7 +55,6 @@ function do_login()
             break;
         default:
             do_not_found();
-            var_dump($_SERVER['REQUEST_METHOD']);
             break;
     }
 }
@@ -110,6 +109,66 @@ function do_not_found()
 
 function do_home()
 {
+    $messages = [];
+    $messages['fields'] = auth_user();
+    render_view('home', $messages);
+}
 
-    render_view('home');
+function do_forget_password()
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        render_view('forget_password');
+    } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $email = validate_email_field($_POST['person']['email']);
+
+        if (crud_restore($email)) {
+            $dados = crud_find($email);
+            date_default_timezone_set('America/Sao_Paulo');
+            $conteudo = $dados->email . ',' . date('Y-m-d-h-i');
+            $token = ssl_crypt($conteudo);
+            $url = 'http://localhost:8000?page=change-password&token=' . $token;
+            sendMailForgetPassword($dados->email, $dados->name, $url);
+            $messages['success'] = "Confirmação enviada para o email";
+            render_view('forget_password', $messages);
+        } else {
+            $messages['errors'] = ['random' => "Email nao atribuido a nenhuma conta"];
+            render_view('forget_password', $messages);
+        }
+
+    }
+}
+function do_change_password()
+{
+
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $token = $_GET['token'];
+        if (validade_token_newpassword($token) === false) {
+            header("Location: /");
+            render_view('login');
+        }
+        $messages['fields'] = (object) ['random' => "<input type='hidden' name='token' value='$token'>"];
+        render_view('change_password', $messages);
+    } else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $token = $_POST['token'];
+        if (validade_token_newpassword($token) === false) {
+            header("Location: /");
+            render_view('login');
+        }
+        $validation_errors = validate_change_password($_POST['person']);
+        if (count($validation_errors) > 0) {
+            $messages = [
+                'errors' => $validation_errors
+            ];
+            $messages['fields'] = (object) ['random' => "<input type='hidden' name='token' value='$token'>"];
+            render_view("change_password", $messages);
+        } else {
+            $data = ssl_decrypt($token);
+            [$email, $date] = explode(',', $data);
+            $user = crud_find($email);
+            $user->password = $_POST['person']['password'];
+            crud_save_password($user);
+            $messages['success'] = 'Senha alterada';
+            render_view("login", $messages);
+        }
+    }
 }
